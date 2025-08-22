@@ -156,7 +156,7 @@ function extractTextBeforeDelimiter() {
       return;
     }
     let dataTable = new table(SpreadsheetApp);
-    dataTable.extractText("before", delimiter);
+    dataTable.extractTextDelimiter("before", delimiter);
   }
 }
 
@@ -170,7 +170,7 @@ function extractTextAfterDelimiter() {
       return;
     }
     let dataTable = new table(SpreadsheetApp);
-    dataTable.extractText("after", delimiter);
+    dataTable.extractTextDelimiter("after", delimiter);
   }
 }
 
@@ -249,4 +249,9 @@ function transposeData(){
 function index(){
   let dataTable = new table(SpreadsheetApp);
   dataTable.insertIndex();
+}
+
+function makeFirstRowHeaders(){
+  let dataTable = new table(SpreadsheetApp);
+  dataTable.makeFirstRowHeaders();
 }

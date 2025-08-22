@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get Data</title>
+    <style>
+        body, html, h1, h2, h3, h4, h5, h6 {
+            margin: 5px;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+        .support-text{
+            font-size: 14px;
+            margin-left: 5px;
+            color: #555;
+            overflow: visible;
+        }
+        #sheetLinks{
+            width: 100%;
+            min-height: 100px;
+            padding: 10px;
+            margin: 10px;
+            box-sizing: border-box;
+            font-size: 16px;
+            resize: vertical;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            overflow-y: auto;
+        }
+        #delimiter{
+            width: 100%;
+            padding: 10px; 
+            margin: 10px; 
+            box-sizing: border-box; 
+            font-size: 16px; 
+            border: 1px solid #ccc; 
+            border-radius: 8px;
+        }
+        #submit{
+            background-color: #4CAF50; 
+            color: white; 
+            padding: 10px 20px; 
+            border: none; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-size: 16px; 
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Data Source</h1>
+    <div class="support-text">Provide the link/links of google sheets you want to import</div>
+    <textarea id="sheetLinks" placeholder="Enter Google Sheet links here"></textarea>
+    <button id="submit" onclick="getData()">Get Data</button>
+    <h2>Advance</h2>
+    <h4>Delimiter</h4>
+    <div class="support-text">Specify the delimiter used in your data (default is comma). Ignore if there is only one link</div>
+    <input type="text" id="delimiter" placeholder="delimiter">
+
+    <script>
+        function getData() {
+            const links = document.getElementById('sheetLinks').value || "";
+            const delimiter = document.getElementById('delimiter').value || ',';
+            google.script.run.processLinks(links, delimiter);
+        }
+    </script>
+</body>
+</html>

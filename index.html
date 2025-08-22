@@ -141,8 +141,7 @@
 
   <script>
     function makeFirstRowHeaders() {
-      let dataTable = new table(SpreadsheetApp);
-      dataTable.makeFirstRowHeaders();
+      google.script.run.makeFirstRowHeaders();
     }
     function replaceVals() {
       google.script.run.replaceValuesDialog();

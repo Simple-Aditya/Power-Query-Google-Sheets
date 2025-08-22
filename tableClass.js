@@ -5,8 +5,9 @@ class table {
     this._executionSteps = [];
     this._numRows = this._sheet.getLastRow() || 1;
     this._numCols = this._sheet.getLastColumn();
-    this._data = this._range.getValues().slice(1);
-    this._headers = this._range.getValues()[0];
+    this._table = this._range.getValues();
+    this._data = this._table.slice(1);
+    this._headers = this._table[0];
     this._ui = spreadsheet.getUi();
     this._currentCell = this._sheet.getActiveCell();
     this._currentCol = this._currentCell.getColumn();
@@ -39,7 +40,7 @@ class table {
   // This method inserts a new sheet with a Row Count name and gives the total number of rows
   countRows(){
     const newSheet = insertNewSheet("Row Count");
-    newSheet.getRange(1, 1, 1, 2).setValues([[`Total Rows in ${this._sheet.getName()}`, this._numRows - 1]]);
+    newSheet.getRange(1, 1, 1, 2).setValues([[`Total Rows in ${this._sheet.getName()}`, this._numRows]]);
     Logger.log(`Total Rows: ${this._numRows}`);
     this._executionSteps.push(`Total Rows: ${this._numRows}`);
   }
@@ -121,7 +122,7 @@ class table {
     }
     catch(err){
       Logger.log(`Unable to transpose the data because ${err}`);
-      this._ui("An error occurred while transposing the data. Please check the logs for details")
+      this._ui.alert("An error occurred while transposing the data. Please check the logs for details")
     }
   }
 
@@ -293,11 +294,10 @@ class table {
         return;
       }
       let index = start;
-      let indexCol = this._data.mao(row => {
-        return index++;
-      })
-      this._data.getRange(2, this._numCols + 1, indexCol.length, 1).setValues(indexCol);
-      this._data.getRange(1, this._numCols + 1).setValue("Index");
+      let indexCol = this._data.map(row => [index++]);
+      this._sheet.insertColumnAfter(this._numCols);
+      this._sheet.getRange(2, this._numCols + 1, indexCol.length, 1).setValues(indexCol);
+      this._sheet.getRange(1, this._numCols + 1).setValue("Index");
       Logger.log("Inserted Index Column");
       this._executionSteps.push("Inserted Index Col");
     }
