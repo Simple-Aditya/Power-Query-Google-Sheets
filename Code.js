@@ -1,7 +1,8 @@
 function onOpen(){
   const ui = SpreadsheetApp.getUi();
   ui.createMenu("Power Query")
-    .addItem("Data Cleaning", "headerConfirmation")
+    .addItem("Data Cleaning", "headerConfirmation").
+    addItem("Get Data", "getData")
     .addToUi();
 }
 
@@ -25,12 +26,6 @@ function headerConfirmation(){
 function dataCleaningSideBar(){
   var sideBar = HtmlService.createHtmlOutputFromFile("index.html");
   sideBar.setTitle("Data Cleaning")
-  SpreadsheetApp.getUi().showSidebar(sideBar);
-}
-
-function getData(){
-  var sideBar = HtmlService.createHtmlOutputFromFile("getData.html");
-  sideBar.setTitle("Get Data")
   SpreadsheetApp.getUi().showSidebar(sideBar);
 }
 

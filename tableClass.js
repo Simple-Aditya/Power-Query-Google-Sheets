@@ -32,13 +32,6 @@ class table {
   // This method sets the first row as headers and freezes it
   makeFirstRowHeaders() {
     this._sheet.setFrozenRows(1);
-    let index = 1;
-    for(let i = 0; i < this._numRows; i++){
-      if(this._table[i] == null || this._table[i].every(cell => cell === "")){
-        index++;
-      }
-    }
-    this._sheet.getRange(1, 1, this._numRows - index, this._sheet.getLastColumn()).setValues(this._table.slice(0, index));
     this._sheet.getRange(1, 1, 1, this._sheet.getLastColumn())
     .setFontWeight("bold")
     .setBackground("#f2f2f2");
