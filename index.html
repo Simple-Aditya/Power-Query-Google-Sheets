@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    html, body, h3, h4, h5{
+      margin: 0px;
+      padding: 0px;
+      font-family: Arial, sans-serif;
+    }
+    .menu-container{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 5px;
+      cursor: pointer;
+      background-color: #f0f0f0;
+      border: 1px solid #ccc;
+      margin: 5px;
+    } 
+    .menu-container:hover{
+      background-color: #e0e0e0;
+
+    }
+    .menu-item{
+      border: none;
+      background: white;
+      width: 100%;
+      padding: 15px 20px;
+      text-align: left;
+      cursor: pointer;
+      border-bottom: 1px solid #eee;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+    }
+    .menu-item:hover{
+      background-color: #f9f9f9;
+    }
+    .menu-item-grid{
+      border: none;
+      margin: 5px;
+      display: flex;
+      border-bottom: 1px solid #ccc;
+      background: white;
+      width: auto;
+      padding: 15px 20px;
+      text-align: left;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .menu-item-grid:hover{
+      background-color: #f9f9f9;
+    }
+    .sub-menu{
+      padding: 10px;
+      margin: 5px;
+      border: 1px solid #ccc;
+      
+    }
+    .menu-container:hover .sub-menu{
+      display: block;
+    }
+    .arrow{
+      font-size: 20px;
+      color: #333;
+      padding: 5px;
+    }
+
+  </style>
+</head>
+
+<body style="overflow: scroll;">
+  <div>
+    <div class="menu-container">
+      <h3>Manage Table</h3>
+      <span class="arrow">▶</span>
+    </div>
+    <div>
+    <input type="button" class="menu-item" onclick="reverseRows()" value="Reverse Rows">
+    <input type="button" class="menu-item" onclick="makeFirstRowHeaders();" value="Make First Row Headers">
+    <input type="button" class="menu-item" onclick="countRows();" value="Get Row Count">
+    <input type="button" class="menu-item" onclick="replaceVals();" value="Replace Values">
+    <input type="button" class="menu-item" onclick="transpose();" value="Transpose">
+    </div>
+
+    <div class="menu-container">
+      <h3>Manage Rows</h3>
+      <span class="arrow">▶</span>
+    </div>
+    <div>
+      <input type="button" class="menu-item" onclick="subFeature();" value="Manage Number of Rows">
+    </div>
+
+    <div class="menu-container">
+      <h3>Manage Columns</h3>
+      <span class="arrow">▶</span>
+    </div>
+    <div>
+        <input type="button" class="menu-item" onclick="mergeCols()" value = "Merge Columns">
+        <input type="button" class="menu-item" onclick="indexCol()" value = "Insert Index">
+      <div class="sub-menu">
+        <h4>Fill</h4>
+      </div>
+        <input type="button" class="menu-item" onclick="downFill()" value="Down">
+        <input type="button" class="menu-item" onclick="upFill()" value="Up">
+      
+      <div class="sub-menu">
+        <h4>Split Columns</h4>
+      </div>
+        <input type="button" class="menu-item" onclick="splitCol('delimiter')" value="By Delimiter">
+        <input type="button" class="menu-item" onclick="splitCol('charcters')" value="By Number of Characters">
+        <input type="button" class="menu-item" onclick="splitCol('TexttoNum')" value="From Text to Numbers">
+        <input type="button" class="menu-item" onclick="splitCol('NumtoText')" value="From Numbers to Text">
+        <input type="button" class="menu-item" onclick="splitCol('UptoLow')" value="From UpperCase to LowerCase">
+        <input type="button" class="menu-item" onclick="splitCol('LowtoUp')" value="From LowerCase to UpperCase">
+
+      <div class="sub-menu">
+        <h4>Format Column</h4>
+      </div>
+      <div style="display: flex; flex-wrap: wrap;">
+        <input type="button" class="menu-item-grid" onclick="formatCol('lower')" value="lower">
+        <input type="button" class="menu-item-grid" onclick="formatCol('upper')" value="UPPER">
+        <input type="button" class="menu-item-grid" onclick="formatCol('capitalize')" value="Capitalize">
+        <input type="button" class="menu-item-grid" onclick="formatCol('trim')" value="trim">
+        <br>
+        <input type="button" class="menu-item-grid" onclick="addCharacters('suffix')" value="Add Suffix">
+        <input type="button" class="menu-item-grid" onclick="addCharacters('prefix')" value="Add Prefix">  
+      </div>
+      
+      <div class="sub-menu">
+        <h4>Extract Column</h4>
+      </div>
+        <input type="button" class="menu-item" onclick="extractLen()" value="Length">
+        <input type="button" class="menu-item" onclick="extractText('first')" value="First Characters">
+        <input type="button" class="menu-item" onclick="extractText('last')" value="Last Characters">
+        <input type="button" class="menu-item" onclick="extractDelimiter('before')" value="Text Before Delimiter">
+        <input type="button" class="menu-item" onclick="extractDelimiter('after')" value="Text After Delimiter">
+    </div>
+  </div>
+
+  <script>
+    function makeFirstRowHeaders() {
+      let dataTable = new table(SpreadsheetApp);
+      dataTable.makeFirstRowHeaders();
+    }
+    function replaceVals() {
+      google.script.run.replaceValuesDialog();
+    }
+    function subFeature(){
+      google.script.run.showSubFeature('rows');
+    }
+    function downFill(){
+      google.script.run.downFill();
+    }
+    function upFill(){
+      google.script.run.upFill();
+    }
+    function reverseRows() {
+      google.script.run.reverseRows();
+    }
+    function countRows() {
+      google.script.run.countRows();
+    }
+    function formatCol(formatType) {
+      if(formatType === "lower"){
+        google.script.run.lowerCase();
+      }
+      else if(formatType === "upper"){
+        google.script.run.upperCase();
+      }
+      else if(formatType == "capitalize"){
+        google.script.run.capitalize();
+      }
+      else{
+        google.script.run.trim();
+      }
+    }
+    function addCharacters(loc){
+      if(loc == "suffix"){
+        google.script.run.addSuffix();
+      }
+      else{
+        google.script.run.addPrefix();
+      }
+    }
+    function extractLen(){
+      google.script.run.extractLength();
+    }
+    function extractText(loc){
+      if(loc == "first"){
+        google.script.run.extractFirstCharacters();
+      }
+      else{
+        google.script.run.extractLastCharacters();
+      }
+    }
+    function extractDelimiter(loc){
+      if(loc == "before"){
+        google.script.run.extractTextBeforeDelimiter();
+      }
+      else{
+        google.script.run.extractTextAfterDelimiter();
+      }
+    }
+
+    function splitCol(condition){
+      if(condition === "delimiter"){
+        google.script.run.splitColumn("delim");
+      }
+      else if(condition == "charcters"){
+        google.script.run.splitColumnByCharacters();
+      }
+      else if(condition === "TexttoNum"){
+        google.script.run.splitColumn("TexttoNum");
+      }
+      else if(condition === "NumtoText"){
+        google.script.run.splitColumn("NumtoText");
+      }
+      else if(condition === "UptoLow"){
+        google.script.run.splitColumn("UptoLow");
+      }
+      else if(condition === "LowtoUp"){
+        google.script.run.splitColumn("LowtoUp");
+      }
+    }
+
+    function mergeCols() {
+      google.script.run.mergeColumns();
+    }
+
+    function transpose(){
+      google.script.run.transposeData();
+    }
+
+    function indexCol(){
+      google.script.run.index();
+    }
+
+  </script>
+</body>
+</html>

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find and Replace</title>
+    <style>
+        body {
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        h1 {
+            color: #333;
+        }
+        
+        h3 {
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .submit {
+            background-color: #add8e6;
+            color: #333;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+        
+        .submit:hover {
+            background-color: #87ceeb;
+        }
+        
+        .cancel {
+            background-color: #999;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+        
+        .cancel:hover {
+            background-color: #777;
+        }
+        
+        .input {
+            width: 98%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+        }
+        
+        .input:focus {
+            outline: none;
+            border-color: #add8e6;
+            box-shadow: 0 0 5px rgba(173, 216, 230, 0.5);
+        }
+        
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .button-container {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">        
+        <h3>Enter the Value to find</h3>
+        <input type="text" id="findValue" class="input" placeholder="Value to find">
+        
+        <h3>Enter the Value to replace with</h3>
+        <input type="text" id="replaceValue" class="input" placeholder="Value to replace with">
+        
+        <div class="button-container">
+            <input type="button" class="cancel" value="Cancel" onclick="handleCancel()">
+            <input type="button" class="submit" value="Replace" onclick="replaceValues()">
+        </div>
+    </div>
+
+    <script>
+        function replaceValues() {
+            const findValue = document.getElementById('findValue').value.trim();
+            const replaceValue = document.getElementById('replaceValue').value.trim();
+            
+            if (!findValue) {
+                alert("Please enter a value to find.");
+                document.getElementById('findValue').focus();
+                return;
+            }
+            
+            if (typeof google !== 'undefined' && google.script && google.script.run) {
+                google.script.run
+                    .withSuccessHandler(() => {
+                        google.script.host.close();
+                    })
+                    .withFailureHandler((error) => {
+                        alert("Error: " + error.message);
+                    })
+                    .replaceValuesInSheet(findValue, replaceValue);
+            } else {
+                alert(`Would replace "${findValue}" with "${replaceValue}"`);
+            }
+        }
+        
+        function handleCancel() {
+            if (typeof google !== 'undefined' && google.script && google.script.host) {
+                google.script.host.close();
+            } else {
+                // For testing outside Google Apps Script
+                window.close();
+            }
+        }
+        
+        // Allow Enter key to trigger replace
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                replaceValues();
+            }
+        });
+    </script>
+</body>
+</html>
