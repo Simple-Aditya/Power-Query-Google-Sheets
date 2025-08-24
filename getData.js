@@ -4,7 +4,7 @@ function getData(){
   SpreadsheetApp.getUi().showSidebar(sideBar);
 }
 
-function processLinks(links, delimiter) {
+function processLinks(links, delimiter, location) {
   try{
     if(!links){
         SpreadsheetApp.getUi().alert("Please provide links.");
@@ -15,7 +15,13 @@ function processLinks(links, delimiter) {
         SpreadsheetApp.getUi().alert("No valid links found.");
         return;
     }
-    const targetSheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    let targetSheet;
+    if(location === "current"){
+      targetSheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    }
+    else if(location === "specify"){
+      targetSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(location);
+    }
     let inValidUrl = [];
     let spreadSheets = 0;
     let sheets = 0;
@@ -33,6 +39,10 @@ function processLinks(links, delimiter) {
                 if(allSheets[j].getLastRow() === 0) continue;
                 const sheetName = allSheets[j].getName();
                 const sourceSheet = ss.getSheetByName(sheetName);
+                if(location === "separate"){
+                  let newSheetName = insertNewSheet(sheetName);
+                  targetSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(newSheetName);
+                }
                 const data = sourceSheet.getDataRange().getValues();
                 targetSheet.getRange(targetSheet.getLastRow() + 1, 1, data.length, data[0].length).setValues(data);
                 sheets++;
@@ -43,8 +53,7 @@ function processLinks(links, delimiter) {
             Logger.log(`Error processing URL: ${urlArray[i]}\n${error.message}`);
         }
     }
-    SpreadsheetApp.getUi().alert(`Data import completed!\n\nTotal Spreadsheets Processed: ${spreadSheets}\nTotal Sheets Imported: ${sheets}\n\nInvalid URLs:\n${inValidUrl.join("\n")}`);
-    return;
+    SpreadsheetApp.getUi().alert(`Data import completed!\n\nTotal Spreadsheets Processed: ${spreadSheets}\nTotal Sheets Imported: ${sheets}\n\nInvalid URLs:\n${inValidUrl.length ? inValidUrl.join("\n") : "None"}`);
   }
   catch (err){
     Logger.log(`Error in retriving data from sheets: ${err}`);

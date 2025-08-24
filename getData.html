@@ -57,13 +57,50 @@
     <h2>Advance</h2>
     <h4>Delimiter</h4>
     <div class="support-text">Specify the delimiter used in your data (default is comma). Ignore if there is only one link</div>
-    <input type="text" id="delimiter" placeholder="delimiter">
+    <input type="text" id="delimiter" placeholder="delimiter" value=",">
+
+    <h4>Location</h4>
+    <label><input type="radio" name="location" value="current" checked onclick="toggleInput()"> Current Sheet</label><br>
+    <label><input type="radio" name="location" value="separate" onclick="toggleInput()"> Separate Sheets</label><br>
+    <label><input type="radio" name="location" value="specify" onclick="toggleInput()"> Specify Sheet</label><br>
+
+    <div id="sheetInputContainer" style="display: none; margin-top: 8px;">
+        <input type="text" id="sheetName" placeholder="Enter sheet name">
+    </div>
 
     <script>
         function getData() {
             const links = document.getElementById('sheetLinks').value || "";
             const delimiter = document.getElementById('delimiter').value || ',';
-            google.script.run.processLinks(links, delimiter);
+            const locationRadios = document.getElementsByName('location');
+            let location = 'current';
+            for (const radio of locationRadios) {
+                if (radio.checked) {
+                    location = radio.value;
+                    break;
+                }
+            }
+            if(location === 'specify') {
+                let sheetName = document.getElementById('sheetName').value || "New Sheet";
+                let newName = google.script.run.insertNewSheet(sheetName);
+                google.script.run.processLinks(links, delimiter, newName);
+            }
+            else {
+                google.script.run.processLinks(links, delimiter, location);
+            }
+        }
+        
+        function toggleInput() {
+            const container = document.getElementById('sheetInputContainer');
+            const radios = document.getElementsByName('location');
+
+            radios.forEach((radio) => {
+                if (radio.checked && radio.value === 'specify') {
+                    container.style.display = 'block';
+                } else {
+                    container.style.display = 'none';
+                }
+            });
         }
     </script>
 </body>

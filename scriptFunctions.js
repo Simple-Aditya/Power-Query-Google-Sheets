@@ -1,5 +1,15 @@
 function insertNewSheet(sheetName = "New Sheet") {
   let name = sheetName;
+  try{
+    const existingSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(name);
+    if (!existingSheet) {
+      const newSheet = SpreadsheetApp.getActiveSpreadsheet().insertSheet(name);
+      return name;
+    }
+  }
+  catch (err){
+    Logger.log(`Error checking for sheet: ${err}`);
+  }
   let counter = 1;
   while (true) {
     try{
@@ -15,7 +25,7 @@ function insertNewSheet(sheetName = "New Sheet") {
     }
   }
   const newSheet = SpreadsheetApp.getActiveSpreadsheet().insertSheet(`${name}${counter}`);
-  return newSheet;
+  return `${name}${counter}`;
 }
 
 function takeNumricInput(title, text){
