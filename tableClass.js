@@ -99,6 +99,62 @@ class table {
     this._ui.alert("An error occurred while replacing values. Please check the logs for details.");
   }
 }
+
+replacePattern(pattern, newValue = ""){
+  try {
+    if (this._numRows < 1) {
+      Logger.log("No data to replace values");
+      return;
+    }
+    if(!pattern || pattern.toString().trim() === ""){
+      Logger.log("Cannot replace empty or whitespace-only patterns");
+      this._ui.alert("Cannot replace empty or whitespace-only patterns");
+      return;
+    }
+
+    let newData = [];
+    let replacementCount = 0;
+    for(let i = 0; i < this._data.length; i++){
+      let newRow = [];
+      for(let j = 0; j < this._currentColRange; j++){
+        let cell = this._data[i][this._currentCol + j - 1];
+        if(cell != null){
+          let cellStr = cell.toString();
+          try {
+            let regex = new RegExp(pattern, 'g');
+            let newCellValue = cellStr.replace(regex, newValue.toString());
+            if(cellStr !== newCellValue) {
+              replacementCount++;
+            }
+            newRow.push(newCellValue);
+          } 
+          catch (regexErr) {
+            Logger.log(`Invalid regex pattern: ${regexErr}`);
+            this._ui.alert("The provided pattern is invalid. Please correct it and try again.");
+            return;
+          }
+        }
+        else {
+          newRow.push("");
+        }
+      }
+      newData.push(newRow);
+    }
+    if(replacementCount > 0){
+      this._sheet.getRange(2, this._currentCol, newData.length, this._currentColRange).setValues(newData);
+      Logger.log(`Replaced values matching regex "${pattern}" with "${newValue}"`);
+      this._executionSteps.push(`Replaced values with pattern ${pattern}"`);
+    }
+    else {
+      Logger.log(`No instances matching regex "${pattern}" found to replace`);
+      this._ui.alert(`No instances matching pattern found in the selected range`);
+    }
+  }
+  catch (err) {
+    Logger.log(`Error replacing values with regex: ${err}`);
+    this._ui.alert("An error occurred while replacing values with regex. Please check the logs for details.");
+  }
+}
   
   transpose(){
     try{

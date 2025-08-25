@@ -250,6 +250,10 @@ function replaceValuesInSheet(oldValue, newValue) {
   let dataTable = new table(SpreadsheetApp);
   dataTable.newValue(oldValue, newValue);
 }
+function replacePatternInSheet(oldValue, newValue) {
+  let dataTable = new table(SpreadsheetApp);
+  dataTable.replacePattern(oldValue, newValue);
+}
 
 function transposeData(){
   let dataTable = new table(SpreadsheetApp);

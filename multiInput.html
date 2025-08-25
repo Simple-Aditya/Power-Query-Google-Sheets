@@ -91,6 +91,8 @@
         
         <h3>Enter the Value to replace with</h3>
         <input type="text" id="replaceValue" class="input" placeholder="Value to replace with">
+        <label for="pattern"><input type="checkbox" id="pattern" placeholder="Pattern">Pattern</label> 
+        <br>
         
         <div class="button-container">
             <input type="button" class="cancel" value="Cancel" onclick="handleCancel()">
@@ -108,31 +110,20 @@
                 document.getElementById('findValue').focus();
                 return;
             }
-            
-            if (typeof google !== 'undefined' && google.script && google.script.run) {
-                google.script.run
-                    .withSuccessHandler(() => {
-                        google.script.host.close();
-                    })
-                    .withFailureHandler((error) => {
-                        alert("Error: " + error.message);
-                    })
-                    .replaceValuesInSheet(findValue, replaceValue);
-            } else {
-                alert(`Would replace "${findValue}" with "${replaceValue}"`);
+            if(document.getElementById('pattern').checked){
+                google.script.run.replacePatternInSheet(findValue, replaceValue);
+            }
+            else{
+                google.script.run.replaceValuesInSheet(findValue, replaceValue);
             }
         }
         
         function handleCancel() {
             if (typeof google !== 'undefined' && google.script && google.script.host) {
                 google.script.host.close();
-            } else {
-                // For testing outside Google Apps Script
-                window.close();
-            }
+            } 
         }
         
-        // Allow Enter key to trigger replace
         document.addEventListener('keydown', function(event) {
             if (event.key === 'Enter') {
                 replaceValues();

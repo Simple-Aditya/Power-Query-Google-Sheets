@@ -1,5 +1,5 @@
 function getData(){
-  var sideBar = HtmlService.createHtmlOutputFromFile("getData.html");
+  var sideBar = HtmlService.createHtmlOutputFromFile("getDataDialog.html");
   sideBar.setTitle("Get Data")
   SpreadsheetApp.getUi().showSidebar(sideBar);
 }
