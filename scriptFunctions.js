@@ -3,7 +3,7 @@ function insertNewSheet(sheetName = "New Sheet") {
   try{
     const existingSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(name);
     if (!existingSheet) {
-      const newSheet = SpreadsheetApp.getActiveSpreadsheet().insertSheet(name);
+      SpreadsheetApp.getActiveSpreadsheet().insertSheet(name);
       return name;
     }
   }
@@ -11,20 +11,12 @@ function insertNewSheet(sheetName = "New Sheet") {
     Logger.log(`Error checking for sheet: ${err}`);
   }
   let counter = 1;
-  while (true) {
-    try{
-      const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(`${name}${counter}`);
-      if (!sheet) {
-        break;
-      }
-      counter++;
-    }
-    catch (err){
-      Logger.log(`Error checking for sheet: ${err}`);
-      break; 
-    }
+  const allSheets = SpreadsheetApp.getActiveSpreadsheet().getSheets();
+  const sheetNames = allSheets.map(sheet => sheet.getName());
+  while (sheetNames.includes(`${name}${counter}`)) {
+    counter++;
   }
-  const newSheet = SpreadsheetApp.getActiveSpreadsheet().insertSheet(`${name}${counter}`);
+  SpreadsheetApp.getActiveSpreadsheet().insertSheet(`${name}${counter}`);
   return `${name}${counter}`;
 }
 
@@ -33,14 +25,12 @@ function takeNumricInput(title, text){
   let userInput = "";
   while(true){
     let response = ui.prompt(title, text, ui.ButtonSet.OK_CANCEL);
+    if (response.getSelectedButton() === ui.Button.CANCEL){
+      return null;
+    }
     let input = response.getResponseText();
     if (isNaN(input) || input === "" || input === null || input <= 0){
-      const ui = SpreadsheetApp.getUi();
       ui.alert("Invalid input. Please enter a valid number.");
-      return;
-    }
-    else if (response.getSelectedButton() === ui.Button.CANCEL){
-      return;
     }
     else {
       userInput = input;
@@ -51,155 +41,273 @@ function takeNumricInput(title, text){
 }
 
 function keepTopNRows(n) {
-  let dataTable = new table(SpreadsheetApp);
-  dataTable.keepRows(n, "top");
+  try {
+    let dataTable = new table(SpreadsheetApp);
+    dataTable.keepRows(n, "top");
+  } catch (error) {
+    Logger.log(`Error in keepTopNRows: ${error}`);
+    throw error;
+  }
 }
 
 function keepBottomNRows(n) {
-  let dataTable = new table(SpreadsheetApp);
-  dataTable.keepRows(n, "last");
+  try {
+    let dataTable = new table(SpreadsheetApp);
+    dataTable.keepRows(n, "last");
+  } catch (error) {
+    Logger.log(`Error in keepBottomNRows: ${error}`);
+    throw error;
+  }
 }
 
 function removeTopNRows(n) {
-  let dataTable = new table(SpreadsheetApp);
-  dataTable.removeRows(n, "top");
+  try {
+    let dataTable = new table(SpreadsheetApp);
+    dataTable.removeRows(n, "top");
+  } catch (error) {
+    Logger.log(`Error in removeTopNRows: ${error}`);
+    throw error;
+  }
 }
 
 function removeBottomNRows(n) {
-  let dataTable = new table(SpreadsheetApp);
-  dataTable.removeRows(n, "last");
+  try {
+    let dataTable = new table(SpreadsheetApp);
+    dataTable.removeRows(n, "last");
+  } catch (error) {
+    Logger.log(`Error in removeBottomNRows: ${error}`);
+    throw error;
+  }
 }
 
 function removeBlankRows() {
-  let dataTable = new table(SpreadsheetApp);
-  dataTable.removeBlankRows();
+  try {
+    let dataTable = new table(SpreadsheetApp);
+    dataTable.removeBlankRows();
+  } catch (error) {
+    Logger.log(`Error in removeBlankRows: ${error}`);
+    throw error;
+  }
+}
+
+function removeDuplicateRows() {
+  try {
+    // This function is missing implementation
+    const ui = SpreadsheetApp.getUi();
+    ui.alert("Remove duplicate rows functionality is not implemented yet.");
+  } catch (error) {
+    Logger.log(`Error in removeDuplicateRows: ${error}`);
+    throw error;
+  }
 }
 
 function downFill(){
-  let dataTable = new table(SpreadsheetApp);
-  dataTable.fillDown();
+  try {
+    let dataTable = new table(SpreadsheetApp);
+    dataTable.fillDown();
+  } catch (error) {
+    Logger.log(`Error in downFill: ${error}`);
+    throw error;
+  }
 }
 function upFill(){
-  let dataTable = new table(SpreadsheetApp);
-  dataTable.fillUp();
+  try {
+    let dataTable = new table(SpreadsheetApp);
+    dataTable.fillUp();
+  } catch (error) {
+    Logger.log(`Error in upFill: ${error}`);
+    throw error;
+  }
 }
 
-function reverseRows() {
+function setColumnProfiles(){
   let dataTable = new table(SpreadsheetApp);
-  dataTable.reverseRows();
+  dataTable.columnProfile();
+}
+
+function reverseTableRows() {
+  try {
+    let dataTable = new table(SpreadsheetApp);
+    dataTable.reverseRows();
+  } catch (error) {
+    Logger.log(`Error in reverseTableRows: ${error}`);
+    throw error;
+  }
 }
 
 function countRows() {
-  let dataTable = new table(SpreadsheetApp);
-  dataTable.countRows();
+  try {
+    let dataTable = new table(SpreadsheetApp);
+    dataTable.countRows();
+  } catch (error) {
+    Logger.log(`Error in countRows: ${error}`);
+    throw error;
+  }
 }
 
 function lowerCase() {
-  let dataTable = new table(SpreadsheetApp);
-  dataTable.lowerCase();
+  try {
+    let dataTable = new table(SpreadsheetApp);
+    dataTable.lowerCase();
+  } catch (error) {
+    Logger.log(`Error in lowerCase: ${error}`);
+    throw error;
+  }
 }
 
 function upperCase() {
-  let dataTable = new table(SpreadsheetApp);
-  dataTable.upperCase();
+  try {
+    let dataTable = new table(SpreadsheetApp);
+    dataTable.upperCase();
+  } catch (error) {
+    Logger.log(`Error in upperCase: ${error}`);
+    throw error;
+  }
 }
 
 function capitalize() {
-  let dataTable = new table(SpreadsheetApp);
-  dataTable.capitalize();
+  try {
+    let dataTable = new table(SpreadsheetApp);
+    dataTable.capitalize();
+  } catch (error) {
+    Logger.log(`Error in capitalize: ${error}`);
+    throw error;
+  }
 }
 
 function trim() {
-  let dataTable = new table(SpreadsheetApp);
-  dataTable.trim();
+  try {
+    let dataTable = new table(SpreadsheetApp);
+    dataTable.trim();
+  } catch (error) {
+    Logger.log(`Error in trim: ${error}`);
+    throw error;
+  }
 }
 
 function addSuffix() {
-  const ui = SpreadsheetApp.getUi();
-  const response = ui.prompt("Add Suffix", "Enter the suffix to add:", ui.ButtonSet.OK_CANCEL);
-  if(response.getSelectedButton() === ui.Button.OK){
-    let dataTable = new table(SpreadsheetApp);
-    dataTable.addCharacters("", response.getResponseText());
+  try {
+    const ui = SpreadsheetApp.getUi();
+    const response = ui.prompt("Add Suffix", "Enter the suffix to add:", ui.ButtonSet.OK_CANCEL);
+    if(response.getSelectedButton() === ui.Button.OK){
+      let dataTable = new table(SpreadsheetApp);
+      dataTable.addCharacters("", response.getResponseText());
+    }
+  } catch (error) {
+    Logger.log(`Error in addSuffix: ${error}`);
+    throw error;
   }
-  return;
-} 
+}
 
 function addPrefix() {
-  const ui = SpreadsheetApp.getUi();
-  const response = ui.prompt("Add Prefix", "Enter the prefix to add:", ui.ButtonSet.OK_CANCEL);
-  Logger.log(`received response: ${response.getResponseText()}`);
-  if(response.getSelectedButton() === ui.Button.OK){
-    let dataTable = new table(SpreadsheetApp);
-    dataTable.addCharacters(response.getResponseText(), "");
+  try {
+    const ui = SpreadsheetApp.getUi();
+    const response = ui.prompt("Add Prefix", "Enter the prefix to add:", ui.ButtonSet.OK_CANCEL);
+    Logger.log(`received response: ${response.getResponseText()}`);
+    if(response.getSelectedButton() === ui.Button.OK){
+      let dataTable = new table(SpreadsheetApp);
+      dataTable.addCharacters(response.getResponseText(), "");
+    }
+  } catch (error) {
+    Logger.log(`Error in addPrefix: ${error}`);
+    throw error;
   }
-  return;
-} 
+}
 
 function extractLength(){
-  let dataTable = new table(SpreadsheetApp);
-  dataTable.length();
+  try {
+    let dataTable = new table(SpreadsheetApp);
+    dataTable.length();
+  } catch (error) {
+    Logger.log(`Error in extractLength: ${error}`);
+    throw error;
+  }
 }
 
 function extractFirstCharacters(){
-  let title = "Extract First Characters";
-  let text = "Enter the number of characters to extract:";
-  let userInput = takeNumricInput(title, text);
-  let dataTable = new table(SpreadsheetApp);
-  dataTable.extractText("first", userInput);
+  try {
+    let title = "Extract First Characters";
+    let text = "Enter the number of characters to extract:";
+    let userInput = takeNumricInput(title, text);
+    if (userInput === null) return;
+    
+    let dataTable = new table(SpreadsheetApp);
+    dataTable.extractText("first", userInput);
+  } catch (error) {
+    Logger.log(`Error in extractFirstCharacters: ${error}`);
+    throw error;
+  }
 }
 
 function extractLastCharacters(){
-  let title = "Extract Last Characters";
-  let text = "Enter the number of characters to extract:";
-  let userInput = takeNumricInput(title, text);
-  let dataTable = new table(SpreadsheetApp);
-  dataTable.extractText("last", 0, userInput);
+  try {
+    let title = "Extract Last Characters";
+    let text = "Enter the number of characters to extract:";
+    let userInput = takeNumricInput(title, text);
+    if (userInput === null) return;
+    
+    let dataTable = new table(SpreadsheetApp);
+    dataTable.extractText("last", 0, userInput);
+  } catch (error) {
+    Logger.log(`Error in extractLastCharacters: ${error}`);
+    throw error;
+  }
 }
 
 function extractTextBeforeDelimiter() {
-  const ui = SpreadsheetApp.getUi();
-  const response = ui.prompt("Extract Text Before Delimiter", "Enter the delimiter:", ui.ButtonSet.OK_CANCEL);
-  if (response.getSelectedButton() === ui.Button.OK) {
-    let delimiter = response.getResponseText();
-    if (delimiter === "") {
-      ui.alert("Delimiter cannot be empty.");
-      return;
-    }
-    let dataTable = new table(SpreadsheetApp);
-    dataTable.extractTextDelimiter("before", delimiter);
-  }
-}
-
-function extractTextAfterDelimiter() {
-  const ui = SpreadsheetApp.getUi();
-  const response = ui.prompt("Extract Text After Delimiter", "Enter the delimiter:", ui.ButtonSet.OK_CANCEL);
-  if (response.getSelectedButton() === ui.Button.OK) {
-    let delimiter = response.getResponseText();
-    if (delimiter === "") {
-      ui.alert("Delimiter cannot be empty.");
-      return;
-    }
-    let dataTable = new table(SpreadsheetApp);
-    dataTable.extractTextDelimiter("after", delimiter);
-  }
-}
-
-function splitColumn(useCase) {
-  let dataTable = new table(SpreadsheetApp);
-
-  if(useCase === "delim"){
+  try {
     const ui = SpreadsheetApp.getUi();
-    const response = ui.prompt("Split Column by Delimiter", "Enter the delimiter:", ui.ButtonSet.OK_CANCEL);
+    const response = ui.prompt("Extract Text Before Delimiter", "Enter the delimiter:", ui.ButtonSet.OK_CANCEL);
     if (response.getSelectedButton() === ui.Button.OK) {
       let delimiter = response.getResponseText();
       if (delimiter === "") {
         ui.alert("Delimiter cannot be empty.");
         return;
       }
-      dataTable.splitColByDelimiter(delimiter);
+      let dataTable = new table(SpreadsheetApp);
+      dataTable.extractTextDelimiter("before", delimiter);
     }
+  } catch (error) {
+    Logger.log(`Error in extractTextBeforeDelimiter: ${error}`);
+    throw error;
   }
+}
 
+function extractTextAfterDelimiter() {
+  try {
+    const ui = SpreadsheetApp.getUi();
+    const response = ui.prompt("Extract Text After Delimiter", "Enter the delimiter:", ui.ButtonSet.OK_CANCEL);
+    if (response.getSelectedButton() === ui.Button.OK) {
+      let delimiter = response.getResponseText();
+      if (delimiter === "") {
+        ui.alert("Delimiter cannot be empty.");
+        return;
+      }
+      let dataTable = new table(SpreadsheetApp);
+      dataTable.extractTextDelimiter("after", delimiter);
+    }
+  } catch (error) {
+    Logger.log(`Error in extractTextAfterDelimiter: ${error}`);
+    throw error;
+  }
+}
+
+function splitColumn(useCase) {
+  try {
+    let dataTable = new table(SpreadsheetApp);
+    const ui = SpreadsheetApp.getUi();
+
+    if(useCase === "delim"){
+      const response = ui.prompt("Split Column by Delimiter", "Enter the delimiter:", ui.ButtonSet.OK_CANCEL);
+      if (response.getSelectedButton() === ui.Button.OK) {
+        let delimiter = response.getResponseText();
+        if (delimiter === "") {
+          ui.alert("Delimiter cannot be empty.");
+          return;
+        }
+        dataTable.splitColByDelimiter(delimiter);
+      }
+    }
     else if(useCase === "TexttoNum"){
       dataTable.splitColTexttoNum();
     }
@@ -213,59 +321,137 @@ function splitColumn(useCase) {
       dataTable.splitColLowertoUpper();
     }
     else {
-      ui.alert("Invalid use case provided for splitting column by delimiter.");
+      ui.alert("Invalid use case provided for splitting column.");
       return;
     }
-}
-
-function splitColumnByCharacters() {
-  let title = "Split Column by Characters";
-  let text = "Enter the number of characters to split by:";
-  let userInput = takeNumricInput(title, text);
-  let dataTable = new table(SpreadsheetApp);
-  dataTable.splitColByCharacters(userInput);
-}
-
-function mergeColumns() {
-  const ui = SpreadsheetApp.getUi();
-  const response = ui.prompt("Merge Columns", "Enter the delimiter to use for merging:", ui.ButtonSet.OK_CANCEL);
-  if (response.getSelectedButton() === ui.Button.OK) {
-    let delimiter = response.getResponseText();
-    let dataTable = new table(SpreadsheetApp);
-    dataTable.mergeCols(delimiter);
+  } catch (error) {
+    Logger.log(`Error in splitColumn: ${error}`);
+    throw error;
   }
 }
 
-// function used to show the input box
-function replaceValuesDialog(){
-  const ui = SpreadsheetApp.getUi();
-  const html = HtmlService.createHtmlOutputFromFile("multiInput.html")
-    .setWidth(300)
-    .setHeight(200);
-  ui.showModalDialog(html, "Replace Values");
+function splitColumnByCharacters() {
+  try {
+    let title = "Split Column by Characters";
+    let text = "Enter the number of characters to split by:";
+    let userInput = takeNumricInput(title, text);
+    if (userInput === null) return;
+    
+    let dataTable = new table(SpreadsheetApp);
+    dataTable.splitColByCharacters(userInput);
+  } catch (error) {
+    Logger.log(`Error in splitColumnByCharacters: ${error}`);
+    throw error;
+  }
 }
 
-//function to handle the replacement of values
-function replaceValuesInSheet(oldValue, newValue) {
-  let dataTable = new table(SpreadsheetApp);
-  dataTable.newValue(oldValue, newValue);
+function mergeColumns() {
+  try {
+    const ui = SpreadsheetApp.getUi();
+    const response = ui.prompt("Merge Columns", "Enter the delimiter to use for merging:", ui.ButtonSet.OK_CANCEL);
+    if (response.getSelectedButton() === ui.Button.OK) {
+      let delimiter = response.getResponseText();
+      let dataTable = new table(SpreadsheetApp);
+      dataTable.mergeCols(delimiter);
+    }
+  } catch (error) {
+    Logger.log(`Error in mergeColumns: ${error}`);
+    throw error;
+  }
 }
-function replacePatternInSheet(oldValue, newValue) {
-  let dataTable = new table(SpreadsheetApp);
-  dataTable.replacePattern(oldValue, newValue);
+
+function replaceValuesInSheet(oldValue, newValue, firstOccurrence) {
+  try {
+    let dataTable = new table(SpreadsheetApp);
+    dataTable.replaceValue(oldValue, newValue, firstOccurrence);
+  } catch (error) {
+    Logger.log(`Error in replaceValuesInSheet: ${error}`);
+    throw error;
+  }
+}
+
+function replacePatternInSheet(pattern, newValue, firstOccurrence) {
+  try {
+    let dataTable = new table(SpreadsheetApp);
+    dataTable.replacePattern(pattern, newValue, firstOccurrence);
+  } catch (error) {
+    Logger.log(`Error in replacePatternInSheet: ${error}`);
+    throw error;
+  }
 }
 
 function transposeData(){
-  let dataTable = new table(SpreadsheetApp);
-  dataTable.transpose();
+  try {
+    let dataTable = new table(SpreadsheetApp);
+    dataTable.transpose();
+  } catch (error) {
+    Logger.log(`Error in transposeData: ${error}`);
+    throw error;
+  }
 }
 
 function index(){
-  let dataTable = new table(SpreadsheetApp);
-  dataTable.insertIndex();
+  try {
+    let dataTable = new table(SpreadsheetApp);
+    dataTable.insertIndex();
+  } catch (error) {
+    Logger.log(`Error in index: ${error}`);
+    throw error;
+  }
 }
 
 function makeFirstRowHeaders(){
-  let dataTable = new table(SpreadsheetApp);
-  dataTable.makeFirstRowHeaders();
+  try {
+    let dataTable = new table(SpreadsheetApp);
+    dataTable.makeFirstRowHeaders();
+  } catch (error) {
+    Logger.log(`Error in makeFirstRowHeaders: ${error}`);
+    throw error;
+  }
+}
+
+function recordExecution(){
+  try {
+    const ui = SpreadsheetApp.getUi();
+    const response = ui.prompt("Recording Execution", "Please enter a name for the flow:", ui.ButtonSet.OK_CANCEL);
+    if (response.getSelectedButton() === ui.Button.OK) {
+      CURRENT_FLOW = FLOW_MANAGER.createFlow(response.getResponseText());
+    }
+  }
+  catch (error) {
+    Logger.log(`Error in recordExecution: ${error}`);
+    throw error;
+  }
+}
+
+function undoLastStep(){
+  try {
+    if(!CURRENT_FLOW || !FLOW_MANAGER.flow[CURRENT_FLOW] || FLOW_MANAGER.flow[CURRENT_FLOW].stepsCount === 0){
+      Logger.log("No steps to undo.");
+      return;
+    }
+    FLOW_MANAGER.deleteStep(CURRENT_FLOW);
+  }
+  catch (error) {
+    Logger.log(`Error in undoLastStep: ${error}`);
+    throw error;
+  }
+}
+
+function saveExecution(){
+  try {
+    if(!CURRENT_FLOW || !FLOW_MANAGER.flow[CURRENT_FLOW] || FLOW_MANAGER.flow[CURRENT_FLOW].stepsCount === 0){
+      Logger.log("No steps to save.");
+      return;
+    }
+    FLOW_MANAGER.saveFlow(CURRENT_FLOW);
+  }
+  catch (error) {
+    Logger.log(`Error in saveExecution: ${error}`);
+    throw error;
+  }
+}
+
+function showSteps(){
+  return FLOW_MANAGER.showFlowSteps(CURRENT_FLOW);
 }

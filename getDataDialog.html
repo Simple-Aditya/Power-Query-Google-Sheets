@@ -5,67 +5,308 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Get Data</title>
     <style>
-        body, html, h1, h2, h3, h4, h5, h6 {
-            margin: 5px;
+        * {
+            margin: 0;
             padding: 0;
-            font-family: Arial, sans-serif;
-        }
-        .support-text{
-            font-size: 14px;
-            margin-left: 5px;
-            color: #555;
-            overflow: visible;
-        }
-        #sheetLinks{
-            width: 100%;
-            min-height: 100px;
-            padding: 10px;
-            margin: 10px;
             box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            margin: 0 auto;
+            padding: 15px;
+            background-color: #f8f9fa;
+        }
+
+        h1, h2, h3, h4, h5 {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 15px;
+            color: #667eea;
+        }
+
+        h2 {
+            font-size: 20px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            color: #667eea;
+        }
+
+        h4 {
             font-size: 16px;
-            resize: vertical;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            overflow-y: auto;
+            margin-top: 15px;
+            color: #495057;
         }
-        #delimiter{
+
+        .support-text {
+            font-size: 12px;
+            margin-bottom: 4px;
+            color: #96a1aa;
+        }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            margin-bottom: 20px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(102, 126, 234, 0.1);
+            padding: 15px;
+        }
+
+        .card-header {
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        #sheetLinks {
             width: 100%;
-            padding: 10px; 
-            margin: 10px; 
-            box-sizing: border-box; 
-            font-size: 16px; 
-            border: 1px solid #ccc; 
-            border-radius: 8px;
+            padding: 8px;
+            border: 2px solid #e9ecef;
+            border-radius: 5px;
+            font-size: 14px;
+            font-family: 'Courier New', monospace;
+            background: white;
+            transition: all 0.3s ease;
+            cursor: text;
+            pointer-events: auto;
+            position: relative;
+            z-index: 5;
+            min-height: 100px;
+            resize: vertical;
+            margin-bottom: 15px;
         }
-        #submit{
-            background-color: #4CAF50; 
-            color: white; 
-            padding: 10px 20px; 
-            border: none; 
-            border-radius: 8px; 
-            cursor: pointer; 
-            font-size: 16px; 
-            margin: 10px;
+
+        #sheetLinks:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        #delimiter {
+            width: 100%;
+            padding: 12px; 
+            margin-bottom: 15px;
+            box-sizing: border-box; 
+            font-size: 15px; 
+            border: 2px solid #e9ecef; 
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        #delimiter:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        #sheetName {
+            width: 100%;
+            padding: 12px; 
+            margin-top: 8px;
+            box-sizing: border-box; 
+            font-size: 15px; 
+            border: 2px solid #e9ecef; 
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        #sheetName:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        #submit {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        #submit:hover {
+            background: linear-gradient(135deg, #5a6fd8 0%, #6a4c93 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        #submit:active {
+            transform: translateY(1px);
+        }
+
+        #submit::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        #submit:hover::before {
+            left: 100%;
+        }
+
+        .radio-group {
+            margin: 15px 0;
+        }
+
+        .radio-label {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            cursor: pointer;
+            font-size: 15px;
+            color: #495057;
+            transition: all 0.2s ease;
+        }
+
+        .radio-label:hover {
+            color: #667eea;
+        }
+
+        input[type="radio"] {
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        .section-divider {
+            background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+            border-radius: 4px;
+            padding: 6px 10px;
+            margin: 15px 0;
+            font-weight: 600;
+            color: #6c757d;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section-divider::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transform: translateX(-50%);
+            border-radius: 2px;
+        }
+
+        /* Dropdown styling */
+        .dropdown-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-header:hover {
+            background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+        }
+
+        .dropdown-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            padding: 0 15px;
+        }
+
+        .dropdown-content.show {
+            max-height: 500px;
+            padding: 15px;
+            border-radius: 0 0 8px 8px;
+            border: 1px solid #e9ecef;
+            border-top: none;
+        }
+
+        .arrow-icon {
+            width: 0;
+            height: 0;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 6px solid #6c757d;
+            transition: transform 0.3s ease;
+        }
+
+        .arrow-icon.rotated {
+            transform: rotate(180deg);
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>Data Source</h1>
-    <div class="support-text">Provide the link/links of google sheets you want to import</div>
-    <textarea id="sheetLinks" placeholder="Enter Google Sheet links here"></textarea>
-    <button id="submit" onclick="getData()">Get Data</button>
-    <h2>Advance</h2>
-    <h4>Delimiter</h4>
-    <div class="support-text">Specify the delimiter used in your data (default is comma). Ignore if there is only one link</div>
-    <input type="text" id="delimiter" placeholder="delimiter" value=",">
+    <div class="card">
+        <div class="card-header">
+            <h1>Data Source</h1>
+            <div class="support-text">Provide the link/links of Google Drive or Sheets you want to import</div>
+            <div class="support-text">It can only import data from google sheets, csv files, and excel files.</div>
+        </div>
+        <textarea id="sheetLinks" placeholder="Enter Google Drive or Sheet links here"></textarea>
+        <button id="submit" onclick="getData()">Get Data</button>
+    </div>
+    
+    <div class="card">
+        <div class="dropdown-header" onclick="toggleDropdown()">
+            <h2 style="margin: 0;">Advanced Options</h2>
+            <div class="arrow-icon" id="arrow"></div>
+        </div>
+        
+        <div class="dropdown-content" id="advancedOptions">
+            <div class="section-divider">Import Settings</div>
+            
+            <h4>Delimiter</h4>
+            <div class="support-text">Specify the delimiter used in your data (default is comma). Ignore if there is only one link</div>
+            <input type="text" id="delimiter" placeholder="delimiter" value=",">
 
-    <h4>Location</h4>
-    <label><input type="radio" name="location" value="current" checked onclick="toggleInput()"> Current Sheet</label><br>
-    <label><input type="radio" name="location" value="separate" onclick="toggleInput()"> Separate Sheets</label><br>
-    <label><input type="radio" name="location" value="specify" onclick="toggleInput()"> Specify Sheet</label><br>
+            <h4>Location</h4>
+            <div class="radio-group">
+                <label class="radio-label">
+                    <input type="radio" name="location" value="current" checked onclick="toggleInput()"> Current Sheet
+                </label>
+                <label class="radio-label">
+                    <input type="radio" name="location" value="separate" onclick="toggleInput()"> Separate Sheets
+                </label>
+                <label class="radio-label">
+                    <input type="radio" name="location" value="specify" onclick="toggleInput()"> Specify Sheet
+                </label>
+            </div>
 
-    <div id="sheetInputContainer" style="display: none; margin-top: 8px;">
-        <input type="text" id="sheetName" placeholder="Enter sheet name">
+            <div id="sheetInputContainer" style="display: none; margin-top: 8px;">
+                <input type="text" id="sheetName" placeholder="Enter sheet name">
+            </div>
+        </div>
     </div>
 
     <script>
@@ -101,6 +342,14 @@
                     container.style.display = 'none';
                 }
             });
+        }
+        
+        function toggleDropdown() {
+            const content = document.getElementById('advancedOptions');
+            const arrow = document.getElementById('arrow');
+            
+            content.classList.toggle('show');
+            arrow.classList.toggle('rotated');
         }
     </script>
 </body>

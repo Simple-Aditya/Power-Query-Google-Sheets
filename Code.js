@@ -1,9 +1,28 @@
 function onOpen(){
+  createPowerQueryMenu();
+}
+
+function createPowerQueryMenu(){
   const ui = SpreadsheetApp.getUi();
-  ui.createMenu("Power Query")
-    .addItem("Get Data", "getData")
-    .addItem("Data Cleaning", "headerConfirmation")
-    .addToUi();
+  const menu = ui.createMenu("Power Query");
+  menu.addItem("Get Data", "getData");
+  menu.addItem("Data Cleaning", "headerConfirmation");
+  menu.addseparator();
+  const flows = FLOW_MANAGER.getAllFlows();
+  for(const flow of flows){
+    if(FLOW_MANAGER.flow[flow] && FLOW_MANAGER.flow[flow].isSaved){
+      menu.addItem(`Execution: ${flow}`, `executeFlow(${flow})`);
+    }
+  }
+  menu.addToUi();
+}
+
+function executeFlow(flowName) {
+  try {
+    FLOW_MANAGER.executeFlow(flowName);
+  } catch (error) {
+    Logger.log(`Error executing flow ${flowName}: ${error}`);
+  }
 }
 
 function headerConfirmation(){
@@ -24,13 +43,18 @@ function headerConfirmation(){
 }
 
 function dataCleaningSideBar(){
-  var sideBar = HtmlService.createHtmlOutputFromFile("index.html");
-  sideBar.setTitle("Data Cleaning")
+  var sideBar = HtmlService.createHtmlOutputFromFile("index.html")
+    .setTitle("Data Cleaning")
+    .setSandboxMode(HtmlService.SandboxMode.IFRAME);
   SpreadsheetApp.getUi().showSidebar(sideBar);
 }
 
-function showSubFeature(featureName){
-  var html = HtmlService.createHtmlOutputFromFile(`${featureName}.html`);
-  html.setTitle(`Manage ${featureName}`)
-  SpreadsheetApp.getUi().showSidebar(html);
+// This function acts as a bridge for the pattern replacement functionality
+function replaceWithPattern(pattern, replaceWith) {
+  try {
+    return replacePatternInSheet(pattern, replaceWith);
+  } catch (error) {
+    Logger.log(`Error in replaceWithPattern: ${error}`);
+    throw error;
+  }
 }

@@ -1,242 +1,1536 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Table Management Tool</title>
   <style>
-    html, body, h3, h4, h5{
-      margin: 0px;
-      padding: 0px;
-      font-family: Arial, sans-serif;
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
-    .menu-container{
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      min-height: 100vh;
+      margin: 0 auto;
+      padding: 10px;
+      backdrop-filter: blur(10px);
+      display: flex;
+      flex-direction: column;
+    }
+
+    h1, h2, h3, h4, h5 {
+      font-weight: 600;
+      color: #2c3e50;
+    }
+
+    .text-primary {
+      color: #667eea;
+    }
+
+    .text-secondary {
+      color: #6c757d;
+    }
+
+    .text-white {
+      color: white;
+    }
+
+    .text-center {
+      text-align: center;
+    }
+
+    /* === LAYOUT COMPONENTS === */
+    .container {
+      max-width: 800px;
+    }
+
+    .section-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 5px;
-      cursor: pointer;
-      background-color: #f0f0f0;
-      border: 1px solid #ccc;
-      margin: 5px;
-    } 
-    .menu-container:hover{
-      background-color: #e0e0e0;
-
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #e9ecef;
     }
-    .menu-item{
-      border: none;
+
+    .section-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: #2c3e50;
+    }
+
+    #mainMenu{
+      flex: 1;
+      height: fit-content;
+      overflow-y: auto;
+      border: 2px solid #72abe4;
+      border-radius: 20px;
+      margin-bottom: 10px;
+    }
+
+    #executionSteps {
+      height: 35%;
+      overflow-y: auto;
+      border: 2px solid #72abe4;
+      border-radius: 20px;
+      margin-top: 5px; 
+      padding: 10px;
+      display: block !important;
+    }
+
+    .heading {
+      font-size: 20px;
+      font-weight: 600;
+      color: #2c3e50;
+      margin-bottom: 10px;
+    }
+
+    /* === CARD SYSTEM === */
+    .card {
       background: white;
-      width: 100%;
-      padding: 15px 20px;
-      text-align: left;
+      border-radius: 10px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+      margin-bottom: 10px;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(102, 126, 234, 0.1);
+      padding: 5px;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+    }
+
+    .card-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 10px;
       cursor: pointer;
-      border-bottom: 1px solid #eee;
-      font-size: 14px;
       display: flex;
       align-items: center;
-    }
-    .menu-item:hover{
-      background-color: #f9f9f9;
-    }
-    .menu-item-grid{
-      border: none;
-      margin: 5px;
-      display: flex;
-      border-bottom: 1px solid #ccc;
-      background: white;
-      width: auto;
-      padding: 15px 20px;
-      text-align: left;
-      cursor: pointer;
-      font-size: 14px;
-    }
-    .menu-item-grid:hover{
-      background-color: #f9f9f9;
-    }
-    .sub-menu{
-      padding: 10px;
-      margin: 5px;
-      border: 1px solid #ccc;
-      
-    }
-    .menu-container:hover .sub-menu{
-      display: block;
-    }
-    .arrow{
-      font-size: 20px;
-      color: #333;
-      padding: 5px;
+      justify-content: space-between;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
     }
 
+    .card-header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s;
+    }
+
+    .card-header:hover::before {
+      left: 100%;
+    }
+
+    .card-header:hover {
+      background: linear-gradient(135deg, #5a6fd8 0%, #6a4c93 100%);
+    }
+
+    .card-header.active {
+      background: linear-gradient(135deg, #4f5cd1 0%, #5f4284 100%);
+    }
+
+    .card-title {
+      color: white;
+      font-size: 18px;
+      font-weight: 600;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .card-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      background: #f8f9fa;
+    }
+
+    .card-content.expanded {
+      max-height: 1000px;
+      padding: 12px;
+    }
+
+    /* === BUTTON SYSTEM === */
+    .btn {
+      border: none;
+      border-radius: 5px;
+      padding: 6px 12px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s;
+    }
+
+    .btn:hover::before {
+      left: 100%;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #5a6fd8 0%, #6a4c93 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-secondary {
+      background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+      color: white;
+      box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+    }
+
+    .btn-secondary:hover {
+      background: linear-gradient(135deg, #5a6268 0%, #495057 100%);
+      transform: translateY(-2px);
+    }
+
+    .btn-safe{
+      background: linear-gradient(135deg, #28a745 0%, #218838 100%);
+      color: white;
+      box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+    }
+
+    .btn-safe:hover {
+      background: linear-gradient(135deg, #218838 0%, #1e7e34 100%);
+      transform: translateY(-2px);
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, #ff4757 0%, #ff3742 100%);
+      color: white;
+      box-shadow: 0 4px 15px rgba(255, 71, 87, 0.3);
+    }
+
+    .btn-danger:hover {
+      background: linear-gradient(135deg, #ff3742 0%, #ff2e3b 100%);
+      transform: translateY(-2px);
+    }
+
+    .btn-full {
+      width: 100%;
+      margin-bottom: 5px;
+    }
+    
+    .btn-fit {
+      width: fit-content;
+      margin-bottom: 5px;
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    /* === MENU ITEMS === */
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 7px;
+      margin-top: 10px;
+    }
+
+    .menu-item {
+      background: white;
+      border: 2px solid #e9ecef;
+      border-radius: 6px;
+      padding: 8px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      text-align: left;
+      font-size: 14px;
+      font-weight: 500;
+      color: #495057;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .menu-item::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      transform: scaleY(0);
+      transition: transform 0.3s ease;
+    }
+
+    .menu-item:hover {
+      background: #f8f9ff;
+      border-color: #667eea;
+      transform: translateX(5px);
+      color: #667eea;
+    }
+
+    .menu-item:hover::before {
+      transform: scaleY(1);
+    }
+
+    /* === SECTION DIVIDERS === */
+    .section-divider {
+      background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+      border-radius: 4px;
+      padding: 6px 10px;
+      margin: 7px 0;
+      font-weight: 600;
+      color: #6c757d;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .section-divider::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      width: 50px;
+      height: 3px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      transform: translateX(-50%);
+      border-radius: 2px;
+    }
+
+    /* === ARROW INDICATOR === */
+    .arrow-icon {
+      font-size: 16px;
+      color: rgba(255, 255, 255, 0.8);
+      transition: transform 0.3s ease;
+      font-weight: bold;
+    }
+
+    .arrow-icon.rotated {
+      transform: rotate(90deg);
+    }
+
+    /* === SUB MENUS === */
+    .sub-menu {
+      display: none;
+      background: rgba(255, 255, 255, 0.98);
+      border-radius: 10px;
+      padding: 15px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(102, 126, 234, 0.1);
+    }
+
+    .sub-menu.active {
+      height: 75%;
+      overflow-y: auto;
+      display: block;
+      animation: fadeInUp 0.4s ease;
+    }
+
+    .back-btn {
+      background: #6c757d;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      margin-bottom: 10px;
+      transition: all 0.3s ease;
+      font-size: 18px;
+    }
+
+    .back-btn:hover {
+      background: #495057;
+      transform: translateY(-2px);
+    }
+
+    /* === DRAG & DROP COMPONENTS === */
+    .drag-elements {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 6px;
+      margin: 10px 0;
+    }
+
+    .draggable-element {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 6px 4px;
+      border-radius: 5px;
+      text-align: center;
+      cursor: grab;
+      font-weight: 600;
+      font-size: 12px;
+      transition: all 0.3s ease;
+      user-select: none;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .draggable-element::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s;
+    }
+
+    .draggable-element:hover::before {
+      left: 100%;
+    }
+
+    .draggable-element:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+    }
+
+    .draggable-element:active {
+      cursor: grabbing;
+      transform: scale(0.95);
+    }
+
+    .draggable-element.dragging {
+      opacity: 0.7;
+      transform: rotate(5deg) scale(1.05);
+    }
+
+    .drop-zone {
+      border: 3px dashed #dee2e6;
+      border-radius: 12px;
+      padding: 10px;
+      text-align: center;
+      background: #f8f9fa;
+      transition: all 0.3s ease;
+      margin: 8px 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .drop-zone::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .drop-zone.drag-over {
+      border-color: #667eea;
+      background: #e8f4fd;
+      transform: scale(1.02);
+    }
+
+    .drop-zone.drag-over::before {
+      opacity: 1;
+    }
+
+    .drop-zone input {
+      width: 100%;
+      padding: 8px;
+      border: 2px solid #e9ecef;
+      border-radius: 5px;
+      font-size: 14px;
+      font-family: 'Courier New', monospace;
+      background: white;
+      transition: all 0.3s ease;
+      cursor: text;
+      pointer-events: auto;
+      position: relative;
+      z-index: 5;
+    }
+
+    .drop-zone input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    /* === INFO BOXES === */
+    .info-box {
+      background: linear-gradient(135deg, #e8f4fd 0%, #f0f8ff 100%);
+      padding: 10px;
+      border-radius: 6px;
+      margin: 20px 0;
+      border-left: 4px solid #667eea;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .info-box::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 90%;
+      height: 100px;
+      background: radial-gradient(circle, rgba(102, 126, 234, 0.1) 0%, transparent 70%);
+      border-radius: 50%;
+      transform: translate(30px, -30px);
+    }
+
+    .info-box h4 {
+      margin: 0 0 10px 0;
+      color: #667eea;
+      font-weight: 600;
+    }
+
+    .info-box p {
+      margin: 5px 0;
+      color: #495057;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    /* === LOADING OVERLAY === */
+    .loading-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 10000;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(5px);
+    }
+
+    .loading-overlay.show {
+      display: flex;
+    }
+
+    .loading-content {
+      background: white;
+      padding: 40px;
+      border-radius: 20px;
+      text-align: center;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .loading-content::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      opacity: 0.1;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #667eea;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px;
+    }
+
+    .loading-text {
+      color: #667eea;
+      font-weight: 600;
+      font-size: 18px;
+      position: relative;
+    }
+
+    /* === ANIMATIONS === */
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.05);
+      }
+    }
+
+    /* === RESPONSIVE DESIGN === */
+    @media (max-width: 768px) {
+      .container {
+        margin: 10px;
+        padding: 20px;
+      }
+
+      .menu-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .drag-elements {
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      }
+
+      .section-title {
+        font-size: 20px;
+      }
+    }
+
+    /* === UTILITY CLASSES === */
+    .hidden {
+      display: none !important;
+    }
+
+    .visible {
+      display: block !important;
+    }
+
+    .flex {
+      display: flex;
+    }
+
+    .flex-center {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .mt-1 {
+      margin-top: 10px;
+    }
+
+    .mt-2 {
+      margin-top: 20px;
+    }
+
+    .mb-1 {
+      margin-bottom: 10px;
+    }
+
+    .mb-2 {
+      margin-bottom: 20px;
+    }
+
+    .p-1 {
+      padding: 10px;
+    }
+
+    .p-2 {
+      padding: 20px;
+    }
   </style>
 </head>
 
-<body style="overflow: scroll;">
-  <div>
-    <div class="menu-container">
-      <h3>Manage Table</h3>
-      <span class="arrow">▶</span>
+<body>
+  <!-- Loading Overlay -->
+  <div id="loadingOverlay" class="loading-overlay">
+    <div class="loading-content">
+      <div class="spinner"></div>
+      <div class="loading-text">Processing...</div>
     </div>
-    <div>
-    <input type="button" class="menu-item" onclick="reverseRows()" value="Reverse Rows">
-    <input type="button" class="menu-item" onclick="makeFirstRowHeaders();" value="Make First Row Headers">
-    <input type="button" class="menu-item" onclick="countRows();" value="Get Row Count">
-    <input type="button" class="menu-item" onclick="replaceVals();" value="Replace Values">
-    <input type="button" class="menu-item" onclick="replaceVals();" value="Replace Pattern">
-    <input type="button" class="menu-item" onclick="transpose();" value="Transpose">
+  </div>
+
+  <!-- Main Menu -->
+  <div id="mainMenu">
+    <h1 class="heading">Main Menu</h1>
+    <!-- Manage Table Section -->
+    <div class="card">
+      <div class="card-header" onclick="toggleCard(this)">
+        <h3 class="card-title">Manage Table</h3>
+        <span class="arrow-icon">▶</span>
+      </div>
+      <div class="card-content">
+        <div class="menu-grid">
+          <button class="menu-item" onclick="callSetColumnProfiles()">Column Profile</button>
+          <button class="menu-item" onclick="reverseTableRows()">Reverse Rows</button>
+          <button class="menu-item" onclick="makeFirstRowHeaders()">Make First Row Headers</button>
+          <button class="menu-item" onclick="countRows()">Get Row Count</button>
+          <button class="menu-item" onclick="showSubMenu('replaceValues')">Replace Values</button>
+          <button class="menu-item" onclick="transposeData()">Transpose</button>
+        </div>
+      </div>
     </div>
 
-    <div class="menu-container">
-      <h3>Manage Rows</h3>
-      <span class="arrow">▶</span>
-    </div>
-    <div>
-      <input type="button" class="menu-item" onclick="subFeature();" value="Manage Number of Rows">
+    <!-- Manage Rows Section -->
+    <div class="card">
+      <div class="card-header" onclick="toggleCard(this)">
+        <h3 class="card-title">Manage Rows</h3>
+        <span class="arrow-icon">▶</span>
+      </div>
+      <div class="card-content">
+        <div class="section-divider">Keep Rows</div>
+        <div class="menu-grid">
+          <button class="menu-item" onclick="topN()">Keep Top N Rows</button>
+          <button class="menu-item" onclick="bottomN()">Keep Bottom N Rows</button>
+        </div>
+
+        <div class="section-divider">Remove Rows</div>
+        <div class="menu-grid">
+          <button class="menu-item" onclick="removeTopN()">Remove Top N Rows</button>
+          <button class="menu-item" onclick="removeBottomN()">Remove Bottom N Rows</button>
+          <button class="menu-item" onclick="removeBlankRow()">Remove Blank Rows</button>
+          <button class="menu-item" onclick="removeDupliateRow()">Remove Duplicate Rows</button>
+        </div>
+      </div>
     </div>
 
-    <div class="menu-container">
-      <h3>Manage Columns</h3>
-      <span class="arrow">▶</span>
-    </div>
-    <div>
-        <input type="button" class="menu-item" onclick="mergeCols()" value = "Merge Columns">
-        <input type="button" class="menu-item" onclick="indexCol()" value = "Insert Index">
-      <div class="sub-menu">
-        <h4>Fill</h4>
+    <!-- Manage Columns Section -->
+    <div class="card">
+      <div class="card-header" onclick="toggleCard(this)">
+        <h3 class="card-title">Manage Columns</h3>
+        <span class="arrow-icon">▶</span>
       </div>
-        <input type="button" class="menu-item" onclick="downFill()" value="Down">
-        <input type="button" class="menu-item" onclick="upFill()" value="Up">
-      
-      <div class="sub-menu">
-        <h4>Split Columns</h4>
-      </div>
-        <input type="button" class="menu-item" onclick="splitCol('delimiter')" value="By Delimiter">
-        <input type="button" class="menu-item" onclick="splitCol('charcters')" value="By Number of Characters">
-        <input type="button" class="menu-item" onclick="splitCol('TexttoNum')" value="From Text to Numbers">
-        <input type="button" class="menu-item" onclick="splitCol('NumtoText')" value="From Numbers to Text">
-        <input type="button" class="menu-item" onclick="splitCol('UptoLow')" value="From UpperCase to LowerCase">
-        <input type="button" class="menu-item" onclick="splitCol('LowtoUp')" value="From LowerCase to UpperCase">
+      <div class="card-content">
+        <div class="menu-grid">
+          <button class="menu-item" onclick="mergeCols()">Merge Columns</button>
+          <button class="menu-item" onclick="indexCol()">Insert Index</button>
+        </div>
 
-      <div class="sub-menu">
-        <h4>Format Column</h4>
+        <div class="section-divider">Fill Options</div>
+        <div class="menu-grid">
+          <button class="menu-item" onclick="downFill()">Fill Down</button>
+          <button class="menu-item" onclick="upFill()">Fill Up</button>
+        </div>
+
+        <div class="menu-grid mt-2">
+          <button class="menu-item" onclick="showSubMenu('splitColumn')">Split Columns</button>
+          <button class="menu-item" onclick="showSubMenu('formatColumn')">Format Columns</button>
+          <button class="menu-item" onclick="showSubMenu('extractColumn')">Extract Columns</button>
+        </div>
       </div>
-      <div style="display: flex; flex-wrap: wrap;">
-        <input type="button" class="menu-item-grid" onclick="formatCol('lower')" value="lower">
-        <input type="button" class="menu-item-grid" onclick="formatCol('upper')" value="UPPER">
-        <input type="button" class="menu-item-grid" onclick="formatCol('capitalize')" value="Capitalize">
-        <input type="button" class="menu-item-grid" onclick="formatCol('trim')" value="trim">
-        <br>
-        <input type="button" class="menu-item-grid" onclick="addCharacters('suffix')" value="Add Suffix">
-        <input type="button" class="menu-item-grid" onclick="addCharacters('prefix')" value="Add Prefix">  
+    </div>
+  </div>
+
+  <div style="display: flex; justify-content: right; gap: 5px; flex-wrap: wrap;">
+    <button class="btn btn-safe btn-fit" onclick="callRecordExecution()">Record Execution</button>
+    <button class="btn btn-secondary btn-fit" onclick="callUndoLastStep()">Undo Last Step</button>
+    <button class="btn btn-primary btn-fit" onclick="callSaveExecution()">Save Execution</button>
+  </div>
+
+  <!--Execution Steps Menu-->
+  <div id="executionSteps">
+    <h1 class="heading">Execution Steps</h1>
+    <div id="stepsContent">
+    </div>
+  </div>
+
+  <!-- Sub Menus -->
+
+  <!-- Split Column Sub Menu -->
+  <div id="splitColumn" class="sub-menu">
+    <button class="back-btn" onclick="showMainMenu('splitColumn')">←</button>
+    <div class="section-header">
+      <h2 class="section-title">Split Column Options</h2>
+    </div>
+    <div class="menu-grid">
+      <button class="menu-item" onclick="splitCol('delimiter')">By Delimiter</button>
+      <button class="menu-item" onclick="splitCol('charcters')">By Number of Characters</button>
+      <button class="menu-item" onclick="splitCol('TexttoNum')">From Text to Numbers</button>
+      <button class="menu-item" onclick="splitCol('NumtoText')">From Numbers to Text</button>
+      <button class="menu-item" onclick="splitCol('UptoLow')">From UpperCase to LowerCase</button>
+      <button class="menu-item" onclick="splitCol('LowtoUp')">From LowerCase to UpperCase</button>
+    </div>
+  </div>
+
+  <!-- Format Column Sub Menu -->
+  <div id="formatColumn" class="sub-menu">
+    <button class="back-btn" onclick="showMainMenu('formatColumn')">←</button>
+    <div class="section-header">
+      <h2 class="section-title">Format Column Options</h2>
+    </div>
+    <div class="section-divider">Text Case</div>
+    <div class="menu-grid">
+      <button class="menu-item" onclick="formatCol('lower')">lowercase</button>
+      <button class="menu-item" onclick="formatCol('upper')">UPPERCASE</button>
+      <button class="menu-item" onclick="formatCol('capitalize')">Capitalize</button>
+      <button class="menu-item" onclick="formatCol('trim')">Trim Spaces</button>
+    </div>
+
+    <div class="section-divider">Add Characters</div>
+    <div class="menu-grid">
+      <button class="menu-item" onclick="addCharacters('suffix')">Add Suffix</button>
+      <button class="menu-item" onclick="addCharacters('prefix')">Add Prefix</button>
+    </div>
+  </div>
+
+  <!-- Extract Column Sub Menu -->
+  <div id="extractColumn" class="sub-menu">
+    <button class="back-btn" onclick="showMainMenu('extractColumn')">←</button>
+    <div class="section-header">
+      <h2 class="section-title">Extract Column Options</h2>
+    </div>
+    <div class="menu-grid">
+      <button class="menu-item" onclick="extractLen()">Extract Length</button>
+      <button class="menu-item" onclick="extractText('first')">First Characters</button>
+      <button class="menu-item" onclick="extractText('last')">Last Characters</button>
+      <button class="menu-item" onclick="extractDelimiter('before')">Text Before Delimiter</button>
+      <button class="menu-item" onclick="extractDelimiter('after')">Text After Delimiter</button>
+    </div>
+  </div>
+
+  <!-- Replace Values Sub Menu -->
+  <div id="replaceValues" class="sub-menu">
+    <button class="back-btn" onclick="showMainMenu('replaceValues')">←</button>
+    <div class="section-header">
+      <h2 class="section-title">Replace Values Options</h2>
+    </div>
+    <div class="menu-grid">
+      <button class="menu-item" onclick="toggleReplace()">Replace Simple Values</button>
+      <button class="menu-item" onclick="toggleReplacePattern()">Replace with Pattern</button>
+    </div>
+
+    <!-- Normal Replace Interface -->
+    <div id="replaceNormalUI" class="hidden">
+      <div class="drop-zone">
+        <input type="text" id="replaceInput" placeholder="Enter text to replace...">
       </div>
-      
-      <div class="sub-menu">
-        <h4>Extract Column</h4>
+
+      <div class="drop-zone">
+        <input type="text" id="replaceNormalInput" placeholder="Replace with...">
       </div>
-        <input type="button" class="menu-item" onclick="extractLen()" value="Length">
-        <input type="button" class="menu-item" onclick="extractText('first')" value="First Characters">
-        <input type="button" class="menu-item" onclick="extractText('last')" value="Last Characters">
-        <input type="button" class="menu-item" onclick="extractDelimiter('before')" value="Text Before Delimiter">
-        <input type="button" class="menu-item" onclick="extractDelimiter('after')" value="Text After Delimiter">
+
+      <div>
+        <input type="checkbox" id="firstNormalOccurance" checked>
+        <label for="firstNormalOccurance">Replace only first occurrence</label>
+      </div>
+
+      <div class="flex" style="gap: 15px; justify-content: flex-end; margin-top: 20px;">
+        <button class="btn btn-secondary" onclick="toggleReplace()">Cancel</button>
+        <button class="btn btn-primary" onclick="executeReplace()">Execute Replace</button>
+      </div>
+    </div>
+
+    <!-- Pattern Replace Interface -->
+    <div id="replacePatternUI" class="hidden">
+      <div class="info-box">
+        <h4>Pattern Replacement Guide</h4>
+        <p>• Drag and drop pattern elements into the input fields below</p>
+        <p>• Combine multiple patterns to create complex search patterns</p>
+        <p>• Use the replace field to specify what to replace matches with</p>
+      </div>
+
+      <div class="drag-elements">
+        <div class="draggable-element" draggable="true" data-pattern="[a-zA-Z]">|text|</div>
+        <div class="draggable-element" draggable="true" data-pattern="[0-9]">|number|</div>
+        <div class="draggable-element" draggable="true" data-pattern="[a-zA-Z0-9]">|alphanumeric|</div>
+        <div class="draggable-element" draggable="true" data-pattern="\\s">|space|</div>
+        <div class="draggable-element" draggable="true" data-pattern="[^a-zA-Z]">|not text|</div>
+        <div class="draggable-element" draggable="true" data-pattern="[^0-9]">|not number|</div>
+      </div>
+
+      <div class="drop-zone" id="dropZone">
+        <input type="text" id="patternInput" placeholder="Drag pattern elements here or type manually...">
+      </div>
+
+      <div class="drop-zone">
+        <input type="text" id="replaceWithInput" placeholder="Replace with...">
+      </div>
+
+      <div>
+        <input type="checkbox" id="firstOccurance" checked>
+        <label for="firstOccurance">Replace only first occurrence</label>
+      </div>
+
+      <div class="flex" style="gap: 15px; justify-content: flex-end; margin-top: 20px;">
+        <button class="btn btn-secondary" onclick="toggleReplacePattern()">Cancel</button>
+        <button class="btn btn-primary" onclick="executeReplacePattern()">Execute Replace</button>
+      </div>
     </div>
   </div>
 
   <script>
-    function makeFirstRowHeaders() {
-      google.script.run.makeFirstRowHeaders();
+    // === CORE UI FUNCTIONS ===
+    function toggleCard(cardHeader) {
+      const cardContent = cardHeader.nextElementSibling;
+      const arrow = cardHeader.querySelector('.arrow-icon');
+
+      // Close all other cards
+      document.querySelectorAll('.card-content').forEach(content => {
+        if (content !== cardContent) {
+          content.classList.remove('expanded');
+          content.previousElementSibling.classList.remove('active');
+          content.previousElementSibling.querySelector('.arrow-icon').classList.remove('rotated');
+        }
+      });
+
+      // Toggle current card
+      cardContent.classList.toggle('expanded');
+      cardHeader.classList.toggle('active');
+      arrow.classList.toggle('rotated');
     }
-    function replaceVals() {
-      google.script.run.replaceValuesDialog();
+
+    function showSubMenu(subMenuId) {
+      const mainMenu = document.getElementById('mainMenu');
+      const subMenu = document.getElementById(subMenuId);
+
+      mainMenu.classList.add('hidden');
+      subMenu.classList.add('active');
     }
-    function subFeature(){
-      google.script.run.showSubFeature('rows');
+
+    function showMainMenu(subMenuId) {
+      const mainMenu = document.getElementById('mainMenu');
+      const subMenu = document.getElementById(subMenuId);
+
+      mainMenu.classList.remove('hidden');
+      subMenu.classList.remove('active');
     }
-    function downFill(){
-      google.script.run.downFill();
-    }
-    function upFill(){
-      google.script.run.upFill();
-    }
-    function reverseRows() {
-      google.script.run.reverseRows();
-    }
-    function countRows() {
-      google.script.run.countRows();
-    }
-    function formatCol(formatType) {
-      if(formatType === "lower"){
-        google.script.run.lowerCase();
-      }
-      else if(formatType === "upper"){
-        google.script.run.upperCase();
-      }
-      else if(formatType == "capitalize"){
-        google.script.run.capitalize();
-      }
-      else{
-        google.script.run.trim();
-      }
-    }
-    function addCharacters(loc){
-      if(loc == "suffix"){
-        google.script.run.addSuffix();
-      }
-      else{
-        google.script.run.addPrefix();
-      }
-    }
-    function extractLen(){
-      google.script.run.extractLength();
-    }
-    function extractText(loc){
-      if(loc == "first"){
-        google.script.run.extractFirstCharacters();
-      }
-      else{
-        google.script.run.extractLastCharacters();
-      }
-    }
-    function extractDelimiter(loc){
-      if(loc == "before"){
-        google.script.run.extractTextBeforeDelimiter();
-      }
-      else{
-        google.script.run.extractTextAfterDelimiter();
+
+    function setExecuting(isExecuting) {
+      const overlay = document.getElementById('loadingOverlay');
+      const buttons = document.querySelectorAll('button, input[type="button"]');
+
+      if (isExecuting) {
+        overlay.classList.add('show');
+        buttons.forEach(btn => btn.disabled = true);
+        callShowSteps()
+      } else {
+        overlay.classList.remove('show');
+        buttons.forEach(btn => btn.disabled = false);
       }
     }
 
-    function splitCol(condition){
-      if(condition === "delimiter"){
-        google.script.run.splitColumn("delim");
+    function getNumericInput(message) {
+      let userInput;
+      let isValid = false;
+      let numericValue = 0;
+
+      while (!isValid) {
+        userInput = prompt(message);
+        if (userInput === null) {
+          return;
+        }
+        userInput = userInput.trim();
+        if (userInput !== '' && !isNaN(userInput) && isFinite(userInput)) {
+          isValid = true;
+          numericValue = parseFloat(userInput);
+          break;
+        }
+        else {
+          alert("Please enter a valid numeric value!");
+        }
       }
-      else if(condition == "charcters"){
-        google.script.run.splitColumnByCharacters();
+      return numericValue;
+    }
+
+    // === DRAG & DROP FUNCTIONS ===
+    function toggleReplacePattern() {
+      const ui = document.getElementById('replacePatternUI');
+      const isHidden = ui.classList.contains('hidden');
+
+      if (isHidden) {
+        ui.classList.remove('hidden');
+        initializeDragAndDrop();
+        
+        // Make inputs editable and focusable
+        const patternInput = document.getElementById('patternInput');
+        const replaceWithInput = document.getElementById('replaceWithInput');
+        
+        // Clear any previous values
+        patternInput.value = '';
+        replaceWithInput.value = '';
+        
+        // Ensure inputs are enabled and focusable
+        patternInput.disabled = false;
+        replaceWithInput.disabled = false;
+        
+        // Set focus to the first input to ensure cursor is visible
+        setTimeout(() => {
+          patternInput.focus();
+        }, 100);
+      } else {
+        ui.classList.add('hidden');
       }
-      else if(condition === "TexttoNum"){
-        google.script.run.splitColumn("TexttoNum");
+    }
+
+    function initializeDragAndDrop() {
+      const draggableElements = document.querySelectorAll('.draggable-element');
+      const dropZones = document.querySelectorAll('.drop-zone');
+      const inputs = document.querySelectorAll('.drop-zone input');
+
+      // Ensure inputs are properly interactive
+      inputs.forEach(input => {
+        input.addEventListener('click', function(e) {
+          // Prevent event from bubbling up to parent elements
+          e.stopPropagation();
+        });
+        
+        // Make sure inputs can receive focus and are editable
+        input.readOnly = false;
+        input.style.pointerEvents = 'auto';
+      });
+
+      draggableElements.forEach(element => {
+        element.addEventListener('dragstart', handleDragStart);
+        element.addEventListener('dragend', handleDragEnd);
+      });
+
+      dropZones.forEach(zone => {
+        zone.addEventListener('dragover', handleDragOver);
+        zone.addEventListener('drop', handleDrop);
+        zone.addEventListener('dragenter', handleDragEnter);
+        zone.addEventListener('dragleave', handleDragLeave);
+      });
+    }
+
+    function handleDragStart(e) {
+      e.target.classList.add('dragging');
+      e.dataTransfer.setData('text/plain', e.target.dataset.pattern);
+      e.dataTransfer.effectAllowed = 'copy';
+    }
+
+    function handleDragEnd(e) {
+      e.target.classList.remove('dragging');
+    }
+
+    function handleDragOver(e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'copy';
+    }
+
+    function handleDragEnter(e) {
+      e.preventDefault();
+      const dropZone = e.target.closest('.drop-zone');
+      if (dropZone) {
+        dropZone.classList.add('drag-over');
       }
-      else if(condition === "NumtoText"){
-        google.script.run.splitColumn("NumtoText");
+    }
+
+    function handleDragLeave(e) {
+      const dropZone = e.target.closest('.drop-zone');
+      if (dropZone && !dropZone.contains(e.relatedTarget)) {
+        dropZone.classList.remove('drag-over');
       }
-      else if(condition === "UptoLow"){
-        google.script.run.splitColumn("UptoLow");
+    }
+
+    function handleDrop(e) {
+      e.preventDefault();
+      const dropZone = e.target.closest('.drop-zone');
+      dropZone.classList.remove('drag-over');
+
+      const pattern = e.dataTransfer.getData('text/plain');
+      const input = dropZone.querySelector('input');
+
+      if (input) {
+        const cursorPos = input.selectionStart || 0;
+        const currentValue = input.value;
+        const newValue = currentValue.slice(0, cursorPos) + pattern + currentValue.slice(cursorPos);
+
+        input.value = newValue;
+
+        const newCursorPos = cursorPos + pattern.length;
+        input.setSelectionRange(newCursorPos, newCursorPos);
+        input.focus();
       }
-      else if(condition === "LowtoUp"){
-        google.script.run.splitColumn("LowtoUp");
+    }
+
+    function executeReplacePattern() {
+      const pattern = document.getElementById('patternInput').value.trim();
+      const replaceWith = document.getElementById('replaceWithInput').value;
+      const firstOccurance = document.getElementById('firstOccurance').value;
+
+      if (!pattern) {
+        alert('Please enter a pattern first!');
+        return;
       }
+
+      toggleReplacePattern();
+      setExecuting(true);
+
+      google.script.run
+        .withSuccessHandler(() => setExecuting(false))
+        .withFailureHandler((error) => {
+          console.error("Error in replace pattern:", error);
+          setExecuting(false);
+          alert("Error executing replace pattern: " + error);
+        })
+        .replacePatternInSheet(pattern, replaceWith, firstOccurance);
+    }
+
+    // === TABLE MANAGEMENT FUNCTIONS ===
+    function makeFirstRowHeaders() {
+      setExecuting(true);
+      google.script.run
+        .withSuccessHandler(() => setExecuting(false))
+        .withFailureHandler((error) => {
+          console.error("Error in makeFirstRowHeaders:", error);
+          setExecuting(false);
+          alert("Error making first row headers: " + error);
+        })
+        .makeFirstRowHeaders();
+    }
+
+    function toggleReplace() {
+      const replaceSection = document.getElementById('replaceNormalUI');
+      const isHidden = replaceSection.classList.contains('hidden');
+
+      if (isHidden) {
+        replaceSection.classList.remove('hidden');
+        const normalInput = document.getElementById('normalInput');
+        const replaceNormalInput = document.getElementById('replaceNormalInput');
+
+        normalInput.value = '';
+        replaceNormalInput.value = '';
+
+        normalInput.disabled = false;
+        replaceNormalInput.disabled = false;
+      }
+      else{
+        replaceSection.classList.add('hidden');
+        const normalInput = document.getElementById('normalInput');
+        const replaceNormalInput = document.getElementById('replaceNormalInput');
+
+        normalInput.value = '';
+        replaceNormalInput.value = '';
+
+        normalInput.disabled = true;
+        replaceNormalInput.disabled = true;
+      }
+    }
+
+    function executeReplace(){
+      const normalInput = document.getElementById('normalInput').value;
+      const replaceNormalInput = document.getElementById('replaceNormalInput').value || '';
+      const firstNormalOccurance = document.getElementById('firstNormalOccurance').value || false;
+
+      setExecuting(true);
+      google.script.run
+        .withSuccessHandler(() => setExecuting(false))
+        .withFailureHandler((error) => {
+          console.error("Error in replacing Values:", error);
+          setExecuting(false);
+          alert("Error opening replacing values: " + error);
+        })
+        .replaceValuesInSheet(normalInput, replaceNormalInput, firstNormalOccurance);
+    }
+
+    function downFill() {
+      setExecuting(true);
+      google.script.run
+        .withSuccessHandler(() => setExecuting(false))
+        .withFailureHandler((error) => {
+          console.error("Error in downFill:", error);
+          setExecuting(false);
+          alert("Error filling down: " + error);
+        })
+        .downFill();
+    }
+
+    function upFill() {
+      setExecuting(true);
+      google.script.run
+        .withSuccessHandler(() => setExecuting(false))
+        .withFailureHandler((error) => {
+          console.error("Error in upFill:", error);
+          setExecuting(false);
+          alert("Error filling up: " + error);
+        })
+        .upFill();
+    }
+
+    function callSetColumnProfiles(){
+      setExecuting(true);
+      google.script.run
+        .withSuccessHandler(() => setExecuting(false))
+        .withFailureHandler((error) => {
+          console.error("Error in setColumnProfiles:", error);
+          setExecuting(false);
+          alert("Error setting column profiles: " + error);
+        })
+        .setColumnProfiles();
+    }
+
+    function reverseTableRows() {
+      setExecuting(true);
+      google.script.run
+        .withSuccessHandler(() => setExecuting(false))
+        .withFailureHandler((error) => {
+          console.error("Error in reverseTableRows:", error);
+          setExecuting(false);
+          alert("Error reversing rows: " + error);
+        })
+        .reverseTableRows();
+    }
+
+    function countRows() {
+      setExecuting(true);
+      google.script.run
+        .withSuccessHandler(() => setExecuting(false))
+        .withFailureHandler((error) => {
+          console.error("Error in countRows:", error);
+          setExecuting(false);
+          alert("Error counting rows: " + error);
+        })
+        .countRows();
+    }
+
+    function transposeData() {
+      setExecuting(true);
+      google.script.run
+        .withSuccessHandler(() => setExecuting(false))
+        .withFailureHandler((error) => {
+          console.error("Error in transposeData:", error);
+          setExecuting(false);
+          alert("Error transposing data: " + error);
+        })
+        .transposeData();
     }
 
     function mergeCols() {
-      google.script.run.mergeColumns();
+      setExecuting(true);
+      google.script.run
+        .withSuccessHandler(() => setExecuting(false))
+        .withFailureHandler((error) => {
+          console.error("Error in mergeCols:", error);
+          setExecuting(false);
+          alert("Error merging columns: " + error);
+        })
+        .mergeColumns();
     }
 
-    function transpose(){
-      google.script.run.transposeData();
+    function indexCol() {
+      setExecuting(true);
+      google.script.run
+        .withSuccessHandler(() => setExecuting(false))
+        .withFailureHandler((error) => {
+          console.error("Error in indexCol:", error);
+          setExecuting(false);
+          alert("Error creating index column: " + error);
+        })
+        .index();
     }
 
-    function indexCol(){
-      google.script.run.index();
+    // === ROW MANAGEMENT FUNCTIONS ===
+    function topN() {
+      const userInput = getNumericInput("Please enter first N rows to keep:");
+      if (userInput !== undefined) {
+        setExecuting(true);
+        google.script.run
+          .withSuccessHandler(() => setExecuting(false))
+          .withFailureHandler((error) => {
+            console.error("Error in topN:", error);
+            setExecuting(false);
+            alert("Error keeping top rows: " + error);
+          })
+          .keepTopNRows(userInput);
+      }
     }
 
+    function bottomN() {
+      const userInput = getNumericInput("Please enter bottom N rows to keep:");
+      if (userInput !== undefined) {
+        setExecuting(true);
+        google.script.run
+          .withSuccessHandler(() => setExecuting(false))
+          .withFailureHandler((error) => {
+            console.error("Error in bottomN:", error);
+            setExecuting(false);
+            alert("Error keeping bottom rows: " + error);
+          })
+          .keepBottomNRows(userInput);
+      }
+    }
+
+    function removeTopN() {
+      const userInput = getNumericInput("Please enter first N rows to remove:");
+      if (userInput !== undefined) {
+        setExecuting(true);
+        google.script.run
+          .withSuccessHandler(() => setExecuting(false))
+          .withFailureHandler((error) => {
+            console.error("Error in removeTopN:", error);
+            setExecuting(false);
+            alert("Error removing top rows: " + error);
+          })
+          .removeTopNRows(userInput);
+      }
+    }
+
+    function removeBottomN() {
+      const userInput = getNumericInput("Please enter bottom N rows to remove:");
+      if (userInput !== undefined) {
+        setExecuting(true);
+        google.script.run
+          .withSuccessHandler(() => setExecuting(false))
+          .withFailureHandler((error) => {
+            console.error("Error in removeBottomN:", error);
+            setExecuting(false);
+            alert("Error removing bottom rows: " + error);
+          })
+          .removeBottomNRows(userInput);
+      }
+    }
+
+    function removeDupliateRow() {
+      setExecuting(true);
+      google.script.run
+        .withSuccessHandler(() => setExecuting(false))
+        .withFailureHandler((error) => {
+          console.error("Error in removeDupliateRow:", error);
+          setExecuting(false);
+          alert("Error removing duplicate rows: " + error);
+        })
+        .removeDuplicateRows();
+    }
+
+    function removeBlankRow() {
+      setExecuting(true);
+      google.script.run
+        .withSuccessHandler(() => setExecuting(false))
+        .withFailureHandler((error) => {
+          console.error("Error in removeBlankRow:", error);
+          setExecuting(false);
+          alert("Error removing blank rows: " + error);
+        })
+        .removeBlankRows();
+    }
+
+    // === COLUMN FORMATTING FUNCTIONS ===
+    function formatCol(formatType) {
+      setExecuting(true);
+
+      const functionMap = {
+        'lower': 'lowerCase',
+        'upper': 'upperCase',
+        'capitalize': 'capitalize',
+        'trim': 'trim'
+      };
+
+      const functionName = functionMap[formatType];
+      if (functionName) {
+        google.script.run
+          .withSuccessHandler(() => setExecuting(false))
+          .withFailureHandler((error) => {
+            console.error(`Error in format ${formatType}:`, error);
+            setExecuting(false);
+            alert(`Error formatting column: ${error}`);
+          })
+        [functionName]();
+      }
+    }
+
+    function addCharacters(loc) {
+      setExecuting(true);
+
+      if (loc === "suffix") {
+        google.script.run
+          .withSuccessHandler(() => setExecuting(false))
+          .withFailureHandler((error) => {
+            console.error("Error in addSuffix:", error);
+            setExecuting(false);
+            alert("Error adding suffix: " + error);
+          })
+          .addSuffix();
+      } else {
+        google.script.run
+          .withSuccessHandler(() => setExecuting(false))
+          .withFailureHandler((error) => {
+            console.error("Error in addPrefix:", error);
+            setExecuting(false);
+            alert("Error adding prefix: " + error);
+          })
+          .addPrefix();
+      }
+    }
+
+    // === EXTRACTION FUNCTIONS ===
+    function extractLen() {
+      setExecuting(true);
+      google.script.run
+        .withSuccessHandler(() => setExecuting(false))
+        .withFailureHandler((error) => {
+          console.error("Error in extractLen:", error);
+          setExecuting(false);
+          alert("Error extracting length: " + error);
+        })
+        .extractLength();
+    }
+
+    function extractText(loc) {
+      setExecuting(true);
+
+      if (loc === "first") {
+        google.script.run
+          .withSuccessHandler(() => setExecuting(false))
+          .withFailureHandler((error) => {
+            console.error("Error in extractFirstCharacters:", error);
+            setExecuting(false);
+            alert("Error extracting first characters: " + error);
+          })
+          .extractFirstCharacters();
+      } else {
+        google.script.run
+          .withSuccessHandler(() => setExecuting(false))
+          .withFailureHandler((error) => {
+            console.error("Error in extractLastCharacters:", error);
+            setExecuting(false);
+            alert("Error extracting last characters: " + error);
+          })
+          .extractLastCharacters();
+      }
+    }
+
+    function extractDelimiter(loc) {
+      setExecuting(true);
+
+      if (loc === "before") {
+        google.script.run
+          .withSuccessHandler(() => setExecuting(false))
+          .withFailureHandler((error) => {
+            console.error("Error in extractTextBeforeDelimiter:", error);
+            setExecuting(false);
+            alert("Error extracting text before delimiter: " + error);
+          })
+          .extractTextBeforeDelimiter();
+      } else {
+        google.script.run
+          .withSuccessHandler(() => setExecuting(false))
+          .withFailureHandler((error) => {
+            console.error("Error in extractTextAfterDelimiter:", error);
+            setExecuting(false);
+            alert("Error extracting text after delimiter: " + error);
+          })
+          .extractTextAfterDelimiter();
+      }
+    }
+
+    // === COLUMN SPLITTING FUNCTIONS ===
+    function splitCol(condition) {
+      setExecuting(true);
+
+      const conditionMap = {
+        'delimiter': 'delim',
+        'charcters': 'splitColumnByCharacters',
+        'TexttoNum': 'TexttoNum',
+        'NumtoText': 'NumtoText',
+        'UptoLow': 'UptoLow',
+        'LowtoUp': 'LowtoUp'
+      };
+
+      if (condition === 'charcters') {
+        google.script.run
+          .withSuccessHandler(() => setExecuting(false))
+          .withFailureHandler((error) => {
+            console.error("Error in splitColumnByCharacters:", error);
+            setExecuting(false);
+            alert("Error splitting column by characters: " + error);
+          })
+          .splitColumnByCharacters();
+      } else {
+        const splitType = conditionMap[condition];
+        if (splitType) {
+          google.script.run
+            .withSuccessHandler(() => setExecuting(false))
+            .withFailureHandler((error) => {
+              console.error(`Error in splitColumn(${splitType}):`, error);
+              setExecuting(false);
+              alert(`Error splitting column: ${error}`);
+            })
+            .splitColumn(splitType);
+        }
+      }
+    }
+
+    <!-- === SAVE & UNDO FUNCTIONS === -->
+    function callRecordExecution(){
+      google.script.run
+        .withFailureHandler((error) => {
+          console.error("Error in recordExecution:", error);
+        })
+        .recordExecution();
+    }
+
+    function callUndoLastStep(){
+      google.script.run
+        .withFailureHandler((error) => {
+          console.error("Error in undoLastStep:", error);
+        })
+        .undoLastStep();
+    }
+
+    function callSaveExecution(){
+      google.script.run
+        .withFailureHandler((error) => {
+          console.error("Error in saveExecution:", error);
+        })
+        .saveExecution();
+    }
+
+    function callShowSteps(){
+      const steps = google.script.run
+        .withFailureHandler((error) => {
+          console.error("Error in showSteps:", error);
+        })
+        .showSteps();
+      
+      Document.getElementById('stepsContent').innerHTML = steps;
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      console.log('Table Management Tool initialized');
+      document.querySelectorAll('input[type="text"]').forEach(input => {
+        input.addEventListener('click', function(e) {
+          e.stopPropagation();
+        });
+      });
+    });
   </script>
 </body>
+
 </html>
